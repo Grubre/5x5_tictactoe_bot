@@ -2,12 +2,13 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include "board.hpp"
 
 struct cmdline_args
 {
     std::string ip;
     int port;
-    std::string marker;
+    Marker marker;
     int depth;
 };
 

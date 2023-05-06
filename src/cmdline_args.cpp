@@ -44,5 +44,5 @@ auto validate_arguments(const std::vector<std::string> &args) -> std::optional<c
         return std::nullopt;
     }
 
-    return cmdline_args{ .ip = ip_number, .port = port, .marker = player_marker, .depth = depth };
+    return cmdline_args{ .ip = ip_number, .port = port, .marker = Marker{marker}, .depth = depth };
 }

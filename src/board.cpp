@@ -1,15 +1,6 @@
-/****************************
-Maciej Gębala (CC BY-NC 4.0)
-Plansza ver. 0.1
-2023-03-30
-****************************/
-#pragma once
-#include <stdio.h>
-#include <stdbool.h>
+#include "board.hpp"
 
-int board[5][5];
-
-const int win[28][4][2] = { 
+constexpr int win[28][4][2] = { 
   { {0,0}, {0,1}, {0,2}, {0,3} },
   { {1,0}, {1,1}, {1,2}, {1,3} },
   { {2,0}, {2,1}, {2,2}, {2,3} },
@@ -40,7 +31,7 @@ const int win[28][4][2] = {
   { {1,4}, {2,3}, {3,2}, {4,1} }
 };
 
-const int lose[48][3][2] = {
+constexpr int lose[48][3][2] = {
   { {0,0}, {0,1}, {0,2} }, { {0,1}, {0,2}, {0,3} }, { {0,2}, {0,3}, {0,4} }, 
   { {1,0}, {1,1}, {1,2} }, { {1,1}, {1,2}, {1,3} }, { {1,2}, {1,3}, {1,4} }, 
   { {2,0}, {2,1}, {2,2} }, { {2,1}, {2,2}, {2,3} }, { {2,2}, {2,3}, {2,4} }, 
@@ -59,54 +50,68 @@ const int lose[48][3][2] = {
   { {1,4}, {2,3}, {3,2} }, { {2,3}, {3,2}, {4,1} }, { {2,4}, {3,3}, {4,2} }
 };
 
-void setBoard()
-{
-  for(int i=0; i<5; i++)
-    for(int j=0; j<5; j++)
-      board[i][j]=0;
+
+Board::Board() {
+    board.fill({{Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE}});
 }
 
-void printBoard()
-{
-  printf("  1 2 3 4 5\n");
-  for(int i=0; i<5; i++) {
-    printf("%d",i+1);
-    for(int j=0; j<5; j++ )
-      switch(board[i][j]) {
-        case 0: printf(" -"); break;
-        case 1: printf(" X"); break;
-        case 2: printf(" O"); break;
-      }
-    printf("\n");
-  }
-  printf("\n");
+void Board::set_cell(int row, int col, Marker player) {
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
+        board[row][col] = player;
+    }
 }
 
-bool setMove(int move, int player)
-{
-  int i,j;
-  i = (move/10)-1;
-  j = (move%10)-1;
-  if( (i<0) || (i>4) || (j<0) || (j>4) ) return false; 
-  if( board[i][j]!=0 ) return false;
-  board[i][j] = player;
-  return true;
+[[nodiscard]] auto Board::get_cell(int row, int col) const -> Marker {
+    if (row >= 0 && row < 5 && col >= 0 && col < 5) {
+        return board[row][col];
+    }
+    return Marker::NONE;
 }
 
-bool winCheck(int player)
-{
-  bool w=false;
-  for(int i=0; i<28; i++)
-    if( (board[win[i][0][0]][win[i][0][1]]==player) && (board[win[i][1][0]][win[i][1][1]]==player) && (board[win[i][2][0]][win[i][2][1]]==player) && (board[win[i][3][0]][win[i][3][1]]==player) )
-      w=true;
-  return w;
+[[nodiscard]] auto Board::check_winner() const -> Marker {
+    for (const auto& winLine : win) {
+        auto a = board[winLine[0][0]][winLine[0][1]];
+        auto b = board[winLine[1][0]][winLine[1][1]];
+        auto c = board[winLine[2][0]][winLine[2][1]];
+        auto d = board[winLine[3][0]][winLine[3][1]];
+
+        if (a == b && b == c && c == d && a != Marker::NONE) {
+            return a;
+        }
+    }
+
+    for (const auto& loseLine : lose) {
+        auto a = board[loseLine[0][0]][loseLine[0][1]];
+        auto b = board[loseLine[1][0]][loseLine[1][1]];
+        auto c = board[loseLine[2][0]][loseLine[2][1]];
+
+        if (a == b && b == c && a != Marker::NONE) {
+            return Marker::NONE;
+        }
+    }
+
+    return Marker::NONE;
 }
 
-bool loseCheck(int player)
-{
-  bool l=false;
-  for(int i=0; i<48; i++)
-    if( (board[lose[i][0][0]][lose[i][0][1]]==player) && (board[lose[i][1][0]][lose[i][1][1]]==player) && (board[lose[i][2][0]][lose[i][2][1]]==player) )
-      l=true;
-  return l;
+void Board::print_board() {
+std::cout << "  1 2 3 4 5\n";
+    for (int i = 0; i < 5; i++) {
+        std::cout << i + 1;
+        for (const auto& cell : board[i]) {
+            switch (cell) {
+                case Marker::NONE:
+                    std::cout << " -";
+                    break;
+                case Marker::X:
+                    std::cout << " X";
+                    break;
+                case Marker::O:
+                    std::cout << " O";
+                    break;
+            }
+        }
+        std::cout << '\n';
+    }
+    std::cout << '\n';
 }
+

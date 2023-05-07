@@ -1,4 +1,38 @@
 #include "heuristic.hpp"
+#include "board.hpp"
+
+auto count_4s(const Board &board) -> std::pair<int, int>
+{
+    int cnt_Os = 0;
+    int cnt_Xs = 0;
+
+    for (const auto &winLine : win) {
+        auto a = board.board[winLine[0][0]][winLine[0][1]];
+        auto b = board.board[winLine[1][0]][winLine[1][1]];
+        auto c = board.board[winLine[2][0]][winLine[2][1]];
+        auto d = board.board[winLine[3][0]][winLine[3][1]];
+
+        if (a == b && b == c && c == d && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
+    }
+
+    return { cnt_Xs, cnt_Os };
+}
+
+auto count_3s(const Board &board) -> std::pair<int, int>
+{
+    int cnt_Os = 0;
+    int cnt_Xs = 0;
+
+    for (const auto &loseLine : lose) {
+        auto a = board.board[loseLine[0][0]][loseLine[0][1]];
+        auto b = board.board[loseLine[1][0]][loseLine[1][1]];
+        auto c = board.board[loseLine[2][0]][loseLine[2][1]];
+
+        if (a == b && b == c && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
+    }
+
+    return { cnt_Xs, cnt_Os };
+}
 
 auto evaluate_board(const Board &board, Marker current_player) -> int
 {
@@ -9,6 +43,32 @@ auto evaluate_board(const Board &board, Marker current_player) -> int
     int my_2s = 0;
     int enemy_2s = 0;
 
+    auto board_4s_cnt = count_4s(board);
+    auto board_3s_cnt = count_3s(board);
+
+    if (current_player == Marker::X) {
+        my_4s += board_4s_cnt.first;
+        enemy_4s += board_4s_cnt.second;
+        my_3s += board_3s_cnt.first;
+        enemy_3s += board_3s_cnt.second;
+    } else {
+        my_4s += board_4s_cnt.second;
+        enemy_4s += board_4s_cnt.first;
+        my_3s += board_3s_cnt.second;
+        enemy_3s += board_3s_cnt.first;
+    }
+
+    // return 30 * my_4s - 20 * enemy_4s - 10 * my_3s + 10 * enemy_3s + my_2s - enemy_2s;
+    return -20 * enemy_4s - 40 * my_3s;
+}
+
+
+// TODO:
+// Sprawdzac czworki i trojki razem i zliczac trojki tylko jesli nie sa
+// czescia jakiejs czworki
+// zepsuty kod ktory mial to robic:
+/*
+ *
     auto check_sequence = [&](int count_X, int count_O) {
         if (count_X == 4) {
             (current_player == Marker::X) ? my_4s++ : enemy_4s++;
@@ -24,6 +84,7 @@ auto evaluate_board(const Board &board, Marker current_player) -> int
             (current_player == Marker::X) ? enemy_2s++ : my_2s++;
         }
     };
+
     // Check for horizontal groups
     for (int row = 0; row < 5; ++row) {
         for (int col = 0; col < 2; ++col) {
@@ -74,21 +135,17 @@ auto evaluate_board(const Board &board, Marker current_player) -> int
 
     // Check for anti-diagonals
     for (int i = 0; i < 2; ++i) {
-        for (int j = 4; j > 2; --j) {
+        for (int j = 0; j < 2; ++j) {// change this line
             int consecutive_X = 0;
             int consecutive_O = 0;
             for (int k = 0; k < 4; ++k) {
-                if (board.get_cell(i + k, j - k) == Marker::X) {
+                if (board.get_cell(i + k, j + 3 - k) == Marker::X) {// change this line
                     consecutive_X++;
-                } else if (board.get_cell(i + k, j - k) == Marker::O) {
+                } else if (board.get_cell(i + k, j + 3 - k) == Marker::O) {// change this line
                     consecutive_O++;
                 }
             }
             check_sequence(consecutive_X, consecutive_O);
         }
     }
-
-    return 10 * my_4s - enemy_4s - 10 * my_3s + enemy_3s + my_2s - enemy_2s;
-}
-
-
+ */

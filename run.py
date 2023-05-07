@@ -8,6 +8,7 @@ def main():
     parser = argparse.ArgumentParser(description='Build and run the project')
     parser.add_argument('build_type', nargs='?', default='Release', choices=['Debug', 'Release'], help='Build type (Debug or Release)')
     parser.add_argument('-cppcheck', action='store_true', help='Run Cppcheck static analysis')
+    parser.add_argument('--test', action='store_true', help='Run tests')
     parser.add_argument('extra_args', nargs=argparse.REMAINDER, help='Additional arguments to be passed to the tictactoebot executable')
 
     args = parser.parse_args()
@@ -26,8 +27,13 @@ def main():
     if args.cppcheck:
         subprocess.run(['cmake', '--build', '.', '--target', 'cppcheck'])
 
-    if not args.cppcheck:
+    if args.test:
+        subprocess.run(['cmake', '--build', '.', '--target', 'build_tests'])
+        subprocess.run(['ctest', '--output-on-failure'])
+
+    if not args.cppcheck and not args.test:
         subprocess.run(['./bin/tictactoebot', *args.extra_args])
 
 if __name__ == '__main__':
     main()
+

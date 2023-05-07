@@ -11,6 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
+add_library(${PROJECT_NAME}_lib ${SOURCES})
 
 # Clang-tidy
 find_program(CLANG_TIDY "clang-tidy")
@@ -30,11 +31,10 @@ if(CPPCHECK)
     )
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_custom_target(build_tests ALL COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target tictactoebot_tests)
 
-find_package(Boost REQUIRED COMPONENTS system)
-include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(tictactoebot ${Boost_LIBRARIES})
+add_executable(${PROJECT_NAME} src/main.cpp)
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${PROJECT_NAME}_lib)
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
@@ -52,4 +52,14 @@ add_custom_command(
     ${CMAKE_BINARY_DIR}/compile_commands.json
     ${CMAKE_SOURCE_DIR}/compile_commands.json
 )
+
+file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
+add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+
+include_directories(external)
+
+target_link_libraries(${PROJECT_NAME}_tests ${Boost_LIBRARIES} ${PROJECT_NAME}_lib)
+
+enable_testing()
+add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
 

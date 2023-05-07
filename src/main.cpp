@@ -1,6 +1,6 @@
+#include "board.hpp"
 #include "cmdline_args.hpp"
 #include "connection.hpp"
-#include "board.hpp"
 #include "minimax.hpp"
 #include <boost/asio.hpp>
 #include <boost/system/error_code.hpp>
@@ -28,7 +28,7 @@ auto main(int argc, char *argv[]) -> int
     auto end_game = false;
 
     auto board = Board{};
-    auto current_player = Marker::X;
+
     while (!end_game) {
         server_message = receive_message(tcp_socket);
         std::cout << "message: " << server_message << std::endl;
@@ -43,19 +43,13 @@ auto main(int argc, char *argv[]) -> int
         }
 
         if ((msg == 0) || (msg == 6)) {
-            std::string client_message;
-            std::cout << "Your move: " << std::endl;
-            // std::cin >> client_message;
-            // move = std::stoi(client_message);
             move = find_best_move(board, marker, depth);
-            std::cout << "move = " << move << std::endl;
-            board.set_cell(move / 10 - 1, move % 10 - 1, get_opponent(current_player));
+            board.set_cell(move / 10 - 1, move % 10 - 1, marker);
             board.print_board();
 
-            client_message = std::to_string(move);
-            send_message(tcp_socket, client_message);
+            send_message(tcp_socket, std::to_string(move));
 
-            std::cout << "Client message: (" << client_message << ")" << std::endl;
+            std::cout << "Client message: " << move << std::endl;
         } else {
             end_game = true;
             switch (msg) {
@@ -78,7 +72,6 @@ auto main(int argc, char *argv[]) -> int
                 break;
             }
         }
-        current_player = get_opponent(current_player);
     }
     return EXIT_SUCCESS;
 }

@@ -7,10 +7,11 @@ auto count_4s(const Board &board) -> std::pair<int, int>
     int cnt_Xs = 0;
 
     for (const auto &winLine : win) {
-        auto a = board.board[winLine[0][0]][winLine[0][1]];
-        auto b = board.board[winLine[1][0]][winLine[1][1]];
-        auto c = board.board[winLine[2][0]][winLine[2][1]];
-        auto d = board.board[winLine[3][0]][winLine[3][1]];
+        auto a = board.get_cell(winLine[0][0], winLine[0][1]);
+        auto b = board.get_cell(winLine[1][0], winLine[1][1]);
+        auto c = board.get_cell(winLine[2][0], winLine[2][1]);
+        auto d = board.get_cell(winLine[3][0], winLine[3][1]);
+
 
         if (a == b && b == c && c == d && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
     }
@@ -24,9 +25,9 @@ auto count_3s(const Board &board) -> std::pair<int, int>
     int cnt_Xs = 0;
 
     for (const auto &loseLine : lose) {
-        auto a = board.board[loseLine[0][0]][loseLine[0][1]];
-        auto b = board.board[loseLine[1][0]][loseLine[1][1]];
-        auto c = board.board[loseLine[2][0]][loseLine[2][1]];
+        auto a = board.get_cell(loseLine[0][0], loseLine[0][1]);
+        auto b = board.get_cell(loseLine[1][0], loseLine[1][1]);
+        auto c = board.get_cell(loseLine[2][0], loseLine[2][1]);
 
         if (a == b && b == c && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
     }
@@ -43,19 +44,19 @@ auto evaluate_board(const Board &board, Marker current_player) -> int
     int my_2s = 0;
     int enemy_2s = 0;
 
-    auto board_4s_cnt = count_4s(board);
-    auto board_3s_cnt = count_3s(board);
+    auto [x_4s, o_4s] = count_4s(board);
+    auto [x_3s, o_3s] = count_3s(board);
 
     if (current_player == Marker::X) {
-        my_4s += board_4s_cnt.first;
-        enemy_4s += board_4s_cnt.second;
-        my_3s += board_3s_cnt.first;
-        enemy_3s += board_3s_cnt.second;
+        my_4s += x_4s;
+        enemy_4s += o_4s;
+        my_3s += x_3s;
+        enemy_3s += o_3s;
     } else {
-        my_4s += board_4s_cnt.second;
-        enemy_4s += board_4s_cnt.first;
-        my_3s += board_3s_cnt.second;
-        enemy_3s += board_3s_cnt.first;
+        my_4s += o_4s;
+        enemy_4s += x_4s;
+        my_3s += o_3s;
+        enemy_3s += x_3s;
     }
 
     // return 30 * my_4s - 20 * enemy_4s - 10 * my_3s + 10 * enemy_3s + my_2s - enemy_2s;

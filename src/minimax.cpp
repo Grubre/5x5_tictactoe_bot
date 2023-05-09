@@ -2,11 +2,10 @@
 #include "board.hpp"
 
 #include <algorithm>
+#include <array>
 #include <future>
 #include <utility>
 #include <vector>
-
-using heuristic_func = const std::function<int(const Board &, Marker)> &;
 
 auto minimax(Board &board,
   heuristic_func evaluate_board,
@@ -18,9 +17,7 @@ auto minimax(Board &board,
 {
     auto winner = board.check_winner();
 
-    if (winner != Marker::NONE) { return evaluate_board(board, maximizing_player); }
-
-    if (depth == 0) { return evaluate_board(board, maximizing_player); }
+    if (winner != Marker::NONE || depth == 0) { return evaluate_board(board, maximizing_player, depth, winner); }
 
     auto is_maximizing_player = (current_player == maximizing_player);
     auto best_value = is_maximizing_player ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
@@ -65,9 +62,9 @@ auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_
     for (auto row = 0; row < 5; ++row) {
         for (auto col = 0; col < 5; ++col) {
             if (board.get_cell(row, col) == Marker::NONE) {
-                Board board_copy = board;
-                futures.push_back(std::async(std::launch::async,
-                  [board_copy, evaluate_board, row, col, current_player, depth, alpha, beta]() mutable {
+                futures.push_back(std::async(
+                  std::launch::async, [board, evaluate_board, row, col, current_player, depth, alpha, beta]() {
+                      Board board_copy = board;
                       board_copy.set_cell(row, col, current_player);
                       auto move_value = minimax(
                         board_copy, evaluate_board, depth, get_opponent(current_player), current_player, alpha, beta);

@@ -35,8 +35,26 @@ auto count_3s(const Board &board) -> std::pair<int, int>
     return { cnt_Xs, cnt_Os };
 }
 
-auto evaluate_board(const Board &board, Marker current_player) -> int
+auto count_2s(const Board &board) -> std::pair<int, int>
 {
+    int cnt_Os = 0;
+    int cnt_Xs = 0;
+
+    for (int row = 0; row < 5; row++) {
+        for (int col = 0; col < 5; col++) {}
+    }
+    return { cnt_Xs, cnt_Os };
+}
+
+auto evaluate_board(const std::array<int, 4> &params,
+  const Board &board,
+  Marker current_player,
+  int depth,
+  Marker winner) -> int
+{
+    if (winner == current_player) { return 1000000; }
+    if (winner == get_opponent(current_player)) { return -1000000; }
+
     int my_4s = 0;
     int enemy_4s = 0;
     int my_3s = 0;
@@ -46,21 +64,26 @@ auto evaluate_board(const Board &board, Marker current_player) -> int
 
     auto [x_4s, o_4s] = count_4s(board);
     auto [x_3s, o_3s] = count_3s(board);
+    auto [x_2s, o_2s] = count_2s(board);
 
     if (current_player == Marker::X) {
         my_4s += x_4s;
         enemy_4s += o_4s;
         my_3s += x_3s;
         enemy_3s += o_3s;
+        my_2s += x_2s;
+        enemy_2s += o_2s;
     } else {
         my_4s += o_4s;
         enemy_4s += x_4s;
         my_3s += o_3s;
         enemy_3s += x_3s;
+        my_2s += o_2s;
+        enemy_2s += x_2s;
     }
 
     // return 30 * my_4s - 20 * enemy_4s - 10 * my_3s + 10 * enemy_3s + my_2s - enemy_2s;
-    return -20 * enemy_4s - 40 * my_3s;
+    return params[0] * my_2s + params[1] * enemy_2s + 0 + 0;
 }
 
 

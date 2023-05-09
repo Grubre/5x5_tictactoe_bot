@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.16)
 project(tictactoebot LANGUAGES CXX)
 
@@ -62,4 +61,3 @@ target_link_libraries(${PROJECT_NAME}_tests ${Boost_LIBRARIES} ${PROJECT_NAME}_l
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
-

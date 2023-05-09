@@ -8,6 +8,6 @@
 
 auto main(int argc, char *argv[]) -> int
 {
-    int a = 5;
-    return play_online(argc, argv);
+    int ret = play_online(argc, argv);
+    return ret;
 }

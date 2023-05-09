@@ -29,7 +29,7 @@ def main():
 
     if args.test:
         subprocess.run(['cmake', '--build', '.', '--target', 'build_tests'])
-        subprocess.run(['ctest', '--output-on-failure'])
+        subprocess.run(['ctest', '--output-on-failure', '-V'])
 
     if not args.cppcheck and not args.test:
         subprocess.run(['./bin/tictactoebot', *args.extra_args])

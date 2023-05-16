@@ -19,7 +19,7 @@ auto minimax(Board &board,
 
     if (winner != Marker::NONE || depth == 0) { return evaluate_board(board, maximizing_player, depth, winner); }
 
-    auto is_maximizing_player = (current_player == maximizing_player);
+    bool is_maximizing_player = (current_player == maximizing_player);
     auto best_value = is_maximizing_player ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
     auto next_player = get_opponent(current_player);
 
@@ -67,7 +67,7 @@ auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_
                       Board board_copy = board;
                       board_copy.set_cell(row, col, current_player);
                       auto move_value = minimax(
-                        board_copy, evaluate_board, depth, get_opponent(current_player), current_player, alpha, beta);
+                        board_copy, evaluate_board, depth - 1, get_opponent(current_player), current_player, alpha, beta);
                       board_copy.set_cell(row, col, Marker::NONE);
                       return std::make_pair(move_value, row * 10 + col + 11);
                   }));

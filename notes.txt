@@ -1,0 +1,11 @@
+TO DO:
+Test this configuration for AI playing 'O' with heuristic = -20 * enemy_4s -40 * my_3s
+When depth is 8, it plays 34, thus stopping me from putting four in a row.
+When depth is 10, it plays 41 because technically all moves are valued as -20 besides 12 which is valued -40
+  1 2 3 4 5
+1 O - O - -
+2 - - - - -
+3 - X X - X
+4 - - - - -
+5 - - - - -
+Maybe this situtation is completely doomed in 10 moves and it doesn't matter what he plays?

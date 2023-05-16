@@ -5,9 +5,11 @@
 #include "minimax.hpp"
 #include "game.hpp"
 #include <iostream>
+#include <future>
+#include <utility>
 
 auto main(int argc, char *argv[]) -> int
 {
-    int ret = play_online(argc, argv);
+    auto ret = play_online(argc, argv);
     return ret;
 }

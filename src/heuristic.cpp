@@ -1,60 +1,12 @@
 #include "heuristic.hpp"
 #include "board.hpp"
 
-auto count_4s(const Board &board) -> std::pair<int, int>
-{
-    int cnt_Os = 0;
-    int cnt_Xs = 0;
-
-    for (const auto &winLine : win) {
-        auto a = board.get_cell(winLine[0][0], winLine[0][1]);
-        auto b = board.get_cell(winLine[1][0], winLine[1][1]);
-        auto c = board.get_cell(winLine[2][0], winLine[2][1]);
-        auto d = board.get_cell(winLine[3][0], winLine[3][1]);
-
-
-        if (a == b && b == c && c == d && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
-    }
-
-    return { cnt_Xs, cnt_Os };
-}
-
-auto count_3s(const Board &board) -> std::pair<int, int>
-{
-    int cnt_Os = 0;
-    int cnt_Xs = 0;
-
-    for (const auto &loseLine : lose) {
-        auto a = board.get_cell(loseLine[0][0], loseLine[0][1]);
-        auto b = board.get_cell(loseLine[1][0], loseLine[1][1]);
-        auto c = board.get_cell(loseLine[2][0], loseLine[2][1]);
-
-        if (a == b && b == c && a != Marker::NONE) { a == Marker::X ? cnt_Xs++ : cnt_Os++; }
-    }
-
-    return { cnt_Xs, cnt_Os };
-}
-
-auto count_2s(const Board &board) -> std::pair<int, int>
-{
-    int cnt_Os = 0;
-    int cnt_Xs = 0;
-
-    for (int row = 0; row < 5; row++) {
-        for (int col = 0; col < 5; col++) {}
-    }
-    return { cnt_Xs, cnt_Os };
-}
-
 auto evaluate_board(const std::array<int, 4> &params,
   const Board &board,
   Marker current_player,
-  int depth,
+  int turn,
   Marker winner) -> int
 {
-    if (winner == current_player) { return 1000000; }
-    if (winner == get_opponent(current_player)) { return -1000000; }
-
     int my_4s = 0;
     int enemy_4s = 0;
     int my_3s = 0;
@@ -62,27 +14,7 @@ auto evaluate_board(const std::array<int, 4> &params,
     int my_2s = 0;
     int enemy_2s = 0;
 
-    auto [x_4s, o_4s] = count_4s(board);
-    auto [x_3s, o_3s] = count_3s(board);
-    auto [x_2s, o_2s] = count_2s(board);
-
-    if (current_player == Marker::X) {
-        my_4s += x_4s;
-        enemy_4s += o_4s;
-        my_3s += x_3s;
-        enemy_3s += o_3s;
-        my_2s += x_2s;
-        enemy_2s += o_2s;
-    } else {
-        my_4s += o_4s;
-        enemy_4s += x_4s;
-        my_3s += o_3s;
-        enemy_3s += x_3s;
-        my_2s += o_2s;
-        enemy_2s += x_2s;
-    }
-
-    // return 30 * my_4s - 20 * enemy_4s - 10 * my_3s + 10 * enemy_3s + my_2s - enemy_2s;
+        // return 30 * my_4s - 20 * enemy_4s - 10 * my_3s + 10 * enemy_3s + my_2s - enemy_2s;
     return params[0] * my_2s + params[1] * enemy_2s + 0 + 0;
 }
 

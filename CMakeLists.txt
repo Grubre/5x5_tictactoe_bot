@@ -1,3 +1,4 @@
+
 cmake_minimum_required(VERSION 3.16)
 project(tictactoebot LANGUAGES CXX)
 
@@ -8,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+find_package(Boost REQUIRED COMPONENTS serialization) # Add this line to find Boost.Serialization
 
 file(GLOB_RECURSE SOURCES src/*.cpp)
 add_library(${PROJECT_NAME}_lib ${SOURCES})
@@ -33,7 +36,7 @@ endif()
 add_custom_target(build_tests ALL COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target tictactoebot_tests)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${PROJECT_NAME}_lib)
+target_link_libraries(${PROJECT_NAME} Boost::serialization ${PROJECT_NAME}_lib) # Link Boost.Serialization here
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
@@ -57,7 +60,8 @@ add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
 
 include_directories(external)
 
-target_link_libraries(${PROJECT_NAME}_tests ${Boost_LIBRARIES} ${PROJECT_NAME}_lib)
+target_link_libraries(${PROJECT_NAME}_tests Boost::serialization ${PROJECT_NAME}_lib) # Link Boost.Serialization here as well
 
 enable_testing()
 add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
+

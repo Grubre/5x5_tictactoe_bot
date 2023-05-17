@@ -9,3 +9,25 @@ When depth is 10, it plays 41 because technically all moves are valued as -20 be
 4 - - - - -
 5 - - - - -
 Maybe this situtation is completely doomed in 10 moves and it doesn't matter what he plays?
+
+
+
+// pulapka 1
+/*
+ [ ][x][ ][ ][x]
+ [ ][ ][x][ ][x]
+ [ ][ ][ ][ ][ ]
+ [ ][ ][ ][ ][x]
+ [ ][ ][ ][ ][ ]
+ */
+
+// pulapka 2
+/*
+ [ ][ ][x][ ][ ]
+ [ ][ ][x][ ][ ]
+ [ ][o][ ][o][ ]
+ [ ][ ][x][ ][ ]
+ [ ][ ][ ][ ][ ]
+ */
+
+// 

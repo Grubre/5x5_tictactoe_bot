@@ -1,6 +1,17 @@
 #include "board.hpp"
 
 Board::Board() { board.fill({ { Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE } }); }
+Board::Board(const std::string& a) {
+        for(int i = 0; i < 25; i++) {
+            int row = i / 5;
+            int col = i % 5;
+            Marker m;
+            if(a[i] == 'X') m = Marker::X;
+            else if(a[i] == 'O') m = Marker::O;
+            else m = Marker::NONE;
+            board[row][col] = m;
+        }
+    }
 
 void Board::set_cell(int row, int col, Marker player)
 {
@@ -35,7 +46,7 @@ void Board::set_cell(int row, int col, Marker player)
     return Marker::NONE;
 }
 
-void Board::print_board()
+void const Board::print_board() const
 {
     std::cout << "  1 2 3 4 5\n";
     for (int i = 0; i < 5; i++) {
@@ -56,4 +67,20 @@ void Board::print_board()
         std::cout << '\n';
     }
     std::cout << '\n';
+}
+
+auto Board::begin() -> decltype(board.begin()) {
+    return board.begin();
+}
+
+auto Board::end() -> decltype(board.end()) {
+    return board.end();
+}
+
+auto Board::begin() const -> decltype(board.begin()) {
+    return board.begin();
+}
+
+auto Board::end() const -> decltype(board.end()) {
+    return board.end();
 }

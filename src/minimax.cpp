@@ -17,7 +17,13 @@ auto minimax(Board &board,
 {
     auto winner = board.check_winner();
 
-    if (winner != Marker::NONE || depth == 0) { return evaluate_board(board, maximizing_player, depth, winner); }
+    if (winner == maximizing_player) {
+        return std::numeric_limits<int>::max();
+    } else if (winner == get_opponent(maximizing_player)) {
+        return std::numeric_limits<int>::min();
+    } else if (depth == 0) {
+        return evaluate_board(board, maximizing_player, depth, winner); 
+    }
 
     bool is_maximizing_player = (current_player == maximizing_player);
     auto best_value = is_maximizing_player ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();

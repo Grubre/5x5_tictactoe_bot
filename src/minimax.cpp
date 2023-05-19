@@ -1,11 +1,11 @@
 #include "minimax.hpp"
 #include "board.hpp"
-
 #include <algorithm>
 #include <array>
 #include <future>
 #include <utility>
 #include <vector>
+#include "openings.hpp"
 
 auto minimax(Board &board,
   heuristic_func evaluate_board,
@@ -59,6 +59,13 @@ auto minimax(Board &board,
 
 auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_player, int depth) -> int
 {
+    static auto openings = Openings{};
+    auto opening = openings.get_opening(board);
+    if(opening) {
+        std::cout << "Choosing an opening!" << std::endl;
+        return *opening;
+    }
+
     auto best_value = std::numeric_limits<int>::min();
     auto best_move = -1;
     auto alpha = std::numeric_limits<int>::min();
@@ -85,7 +92,7 @@ auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_
         auto result = future.get();
         std::cout << "move: " << result.second << ", value: " << result.first << std::endl;
 
-        if (result.first > best_value) {
+        if (result.first >= best_value) {
             best_value = result.first;
             best_move = result.second;
         }

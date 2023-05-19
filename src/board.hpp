@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <cstdint>
 #include <iostream>
 #include <functional>
 #include <fstream>
@@ -13,23 +14,14 @@ class Board
 public:
     Board();
     Board(const std::string& a);
+    Board(uint64_t value);
     void set_cell(int row, int col, Marker player);
     [[nodiscard]] auto get_cell(int row, int col) const -> Marker;
     [[nodiscard]] auto check_winner() const -> Marker;
     void const print_board() const;
 
-    auto to_str() const -> std::string {
-        std::string a;
-        for(int i = 0; i < 25; i++) {
-            int row = i / 5;
-            int col = i % 5;
-            if(board[row][col] == Marker::X) a += 'X';
-            else if(board[row][col] == Marker::O) a += 'O';
-            else a += '-';
-        }
-
-        return a;
-    }
+    auto to_str() const -> std::string;
+    auto to_ll() const -> uint64_t;
 
 private:
     std::array<std::array<Marker, 5>, 5> board{};

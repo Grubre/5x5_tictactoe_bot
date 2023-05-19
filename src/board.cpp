@@ -2,16 +2,25 @@
 
 Board::Board() { board.fill({ { Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE, Marker::NONE } }); }
 Board::Board(const std::string& a) {
-        for(int i = 0; i < 25; i++) {
-            int row = i / 5;
-            int col = i % 5;
-            Marker m;
-            if(a[i] == 'X') m = Marker::X;
-            else if(a[i] == 'O') m = Marker::O;
-            else m = Marker::NONE;
-            board[row][col] = m;
+    for(int i = 0; i < 25; i++) {
+        int row = i / 5;
+        int col = i % 5;
+        Marker m;
+        if(a[i] == 'X') m = Marker::X;
+        else if(a[i] == 'O') m = Marker::O;
+        else m = Marker::NONE;
+        board[row][col] = m;
+    }
+}
+
+Board::Board(uint64_t value) {
+    for(auto& i : board) {
+        for(auto& j : i) {
+            j = (Marker)(value % 3);
+            value /= 3;
         }
     }
+}
 
 void Board::set_cell(int row, int col, Marker player)
 {
@@ -83,4 +92,30 @@ auto Board::begin() const -> decltype(board.begin()) {
 
 auto Board::end() const -> decltype(board.end()) {
     return board.end();
+}
+
+auto Board::to_str() const -> std::string {
+    std::string a;
+    for(int i = 0; i < 25; i++) {
+        int row = i / 5;
+        int col = i % 5;
+        if(board[row][col] == Marker::X) a += 'X';
+        else if(board[row][col] == Marker::O) a += 'O';
+        else a += '-';
+    }
+
+    return a;
+}
+
+auto Board::to_ll() const -> uint64_t {
+    uint64_t factor = 1;
+    uint64_t value;
+    for(auto& row : board) {
+        for(auto val : row) {
+            value += (int)val * factor;
+            factor *= 3;
+        }
+    }
+    
+    return value;
 }

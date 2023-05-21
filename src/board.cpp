@@ -55,6 +55,17 @@ void Board::set_cell(int row, int col, Marker player)
     return Marker::NONE;
 }
 
+
+auto Board::marker_cnt() const -> int {
+    auto cnt = 0;
+    for(auto& row : board) {
+        for(auto marker : row) {
+            cnt += (marker != Marker::NONE);
+        }
+    }
+    return cnt;
+}
+
 void const Board::print_board() const
 {
     std::cout << "  1 2 3 4 5\n";
@@ -109,7 +120,7 @@ auto Board::to_str() const -> std::string {
 
 auto Board::to_ll() const -> uint64_t {
     uint64_t factor = 1;
-    uint64_t value;
+    uint64_t value = 0;
     for(auto& row : board) {
         for(auto val : row) {
             value += (int)val * factor;
@@ -119,3 +130,23 @@ auto Board::to_ll() const -> uint64_t {
     
     return value;
 }
+
+std::ostream& operator<<(std::ostream& os, const Marker& marker) {
+    switch (marker) {
+        case Marker::NONE:
+            os << "NONE";
+            break;
+        case Marker::X:
+            os << "X";
+            break;
+        case Marker::O:
+            os << "O";
+            break;
+        case Marker::ANY:
+            os << "ANY";
+            break;
+    }
+    return os;
+}
+
+

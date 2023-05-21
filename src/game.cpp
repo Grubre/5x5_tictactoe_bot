@@ -28,11 +28,6 @@ auto play_online(int argc, char *argv[]) -> int
     send_message(tcp_socket, std::to_string((int)marker));
 
     auto end_game = false;
-
-    auto heuristic_function = [](const Board &board, Marker current_player, int depth, Marker winner) -> int {
-        return evaluate_board({ 1, 1, 1, 1 }, board, current_player, depth, winner);
-    };
-
     auto board = Board{};
 
     while (!end_game) {
@@ -49,83 +44,7 @@ auto play_online(int argc, char *argv[]) -> int
         }
 
         if ((msg == 0) || (msg == 6)) {
-            move = find_best_move(board, heuristic_function, marker, depth);
-            board.set_cell(move / 10 - 1, move % 10 - 1, marker);
-            board.print_board();
-
-            send_message(tcp_socket, std::to_string(move));
-
-            std::cout << "Client message: " << move << std::endl;
-        } else {
-            end_game = true;
-            switch (msg) {
-            case 1:
-                std::cout << "You won." << std::endl;
-                break;
-            case 2:
-                std::cout << "You lost." << std::endl;
-                break;
-            case 3:
-                std::cout << "Draw." << std::endl;
-                break;
-            case 4:
-                std::cout << "You won. Opponent error" << std::endl;
-                break;
-            case 5:
-                std::cout << "You lost. Your error" << std::endl;
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    return EXIT_SUCCESS;
-}
-
-
-auto play_online_with_params(int argc, char *argv[]) -> int
-{
-    auto str_args = std::vector<std::string>(argv + 1, argv + argc);
-    auto args = validate_arguments_params(str_args);
-
-    if (!args) { return EXIT_FAILURE; }
-
-    const auto &ip_number = args->ip;
-    auto port_number = args->port;
-    auto marker = args->marker;
-    auto depth = args->depth;
-    auto params = args->params;
-
-    auto tcp_socket = connect_to_server(ip_number, port_number);
-
-    auto server_message = receive_message(tcp_socket);
-    std::cout << "Server message: " << server_message << std::endl;
-
-    send_message(tcp_socket, std::to_string((int)marker));
-
-    auto end_game = false;
-
-    auto heuristic_function = [&](const Board &board, Marker current_player, int depth, Marker winner) -> int {
-        return evaluate_board(params, board, current_player, depth, winner);
-    };
-
-    auto board = Board{};
-
-    while (!end_game) {
-        server_message = receive_message(tcp_socket);
-        std::cout << "message: " << server_message << std::endl;
-
-        auto msg = std::stoi(server_message);
-        auto move = msg % 100;
-        msg /= 100;
-
-        if (move != 0) {
-            board.set_cell(move / 10 - 1, move % 10 - 1, get_opponent(marker));
-            board.print_board();
-        }
-
-        if ((msg == 0) || (msg == 6)) {
-            move = find_best_move(board, heuristic_function, marker, depth);
+            move = find_best_move(board, evaluate_board, marker, depth);
             board.set_cell(move / 10 - 1, move % 10 - 1, marker);
             board.print_board();
 

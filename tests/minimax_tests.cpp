@@ -11,9 +11,9 @@ TEST_CASE("Minimax winning scenario")
     board.set_cell(0, 2, Marker::NONE);
     board.set_cell(0, 3, Marker::X);
 
-    auto eval = [](const Board &, Marker maximizing_player, int, Marker winner) {
-        if (winner == maximizing_player) { return 1; }
-        if (winner == get_opponent(maximizing_player)) { return -1; }
+    auto eval = [](const Board & board, Marker maximizing_player, int) {
+        if (board.check_winner() == maximizing_player) { return 1; }
+        if (board.check_winner() == get_opponent(maximizing_player)) { return -1; }
         return 0;
     };
 

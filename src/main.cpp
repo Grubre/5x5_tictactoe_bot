@@ -8,9 +8,9 @@
 #include <future>
 #include <iostream>
 #include <utility>
-#include "openings.hpp"
 
-auto main(int argc, char *argv[]) -> int {
+auto main(int argc, char *argv[]) -> int
+{
     auto ret = play_online(argc, argv);
     return 0;
 }

@@ -7,7 +7,8 @@
 #include <unordered_map>
 
 
-enum class Marker { NONE, X, O };
+enum class Marker { NONE, X, O, ANY };
+std::ostream& operator<<(std::ostream& os, const Marker& marker);
 
 class Board
 {
@@ -22,6 +23,8 @@ public:
 
     auto to_str() const -> std::string;
     auto to_ll() const -> uint64_t;
+
+    auto marker_cnt() const -> int;
 
 private:
     std::array<std::array<Marker, 5>, 5> board{};

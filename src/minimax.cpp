@@ -5,7 +5,10 @@
 #include <future>
 #include <utility>
 #include <vector>
-#include "openings.hpp"
+#include <random>
+#include "patternmap.hpp"
+
+static const pattern_map openings{};
 
 auto minimax(Board &board,
   heuristic_func evaluate_board,
@@ -15,6 +18,9 @@ auto minimax(Board &board,
   int alpha,
   int beta) -> int
 {
+    if(openings.contains(board)) {
+        return (depth + 1) * 1000;
+    }
     auto winner = board.check_winner();
 
     if (winner == maximizing_player) {
@@ -22,7 +28,7 @@ auto minimax(Board &board,
     } else if (winner == get_opponent(maximizing_player)) {
         return std::numeric_limits<int>::min();
     } else if (depth == 0) {
-        return evaluate_board(board, maximizing_player, depth, winner); 
+        return evaluate_board(board, maximizing_player, depth); 
     }
 
     bool is_maximizing_player = (current_player == maximizing_player);
@@ -59,13 +65,6 @@ auto minimax(Board &board,
 
 auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_player, int depth) -> int
 {
-    static auto openings = Openings{};
-    auto opening = openings.get_opening(board);
-    if(opening) {
-        std::cout << "Choosing an opening!" << std::endl;
-        return *opening;
-    }
-
     auto best_value = std::numeric_limits<int>::min();
     auto best_move = -1;
     auto alpha = std::numeric_limits<int>::min();
@@ -88,14 +87,23 @@ auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_
         }
     }
 
+    std::vector<std::pair<int,int>> moves{};
     for (auto &future : futures) {
         auto result = future.get();
         std::cout << "move: " << result.second << ", value: " << result.first << std::endl;
+        moves.push_back(result);
+    }
+    std::sort(moves.begin(), moves.end(), [](const std::pair<int,int>& a, const std::pair<int,int>& b) {
+        return a.first < b.first;
+    });
+    if(moves.front().first == moves.back().first) {
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_int_distribution<> dist(0, moves.size() - 1);
 
-        if (result.first >= best_value) {
-            best_value = result.first;
-            best_move = result.second;
-        }
+        best_move = moves[dist(mt)].second;
+    } else {
+        best_move = moves.back().second;
     }
 
     return best_move;

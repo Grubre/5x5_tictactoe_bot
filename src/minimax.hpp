@@ -4,7 +4,7 @@
 #include <limits>
 #include <utility>
 
-using heuristic_func = const std::function<int(const Board &, Marker, int, Marker)> &;
+using heuristic_func = const std::function<int(const Board &, Marker, int)> &;
 
 auto minimax(Board &board,
   heuristic_func evaluate_board,

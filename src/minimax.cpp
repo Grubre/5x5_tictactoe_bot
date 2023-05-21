@@ -94,16 +94,21 @@ auto find_best_move(Board &board, heuristic_func evaluate_board, Marker current_
         moves.push_back(result);
     }
     std::sort(moves.begin(), moves.end(), [](const std::pair<int,int>& a, const std::pair<int,int>& b) {
-        return a.first < b.first;
+        return a.first > b.first;
     });
-    if(moves.front().first == moves.back().first) {
+    auto best_eval = moves.front().first;
+    auto draw_idx = 0;
+    while(draw_idx < 25 && moves[draw_idx].first == best_eval) {
+        draw_idx++;
+    }
+    if(draw_idx > 1) {
         std::random_device rd;
         std::mt19937 mt(rd());
-        std::uniform_int_distribution<> dist(0, moves.size() - 1);
+        std::uniform_int_distribution<> dist(0, draw_idx - 1);
 
         best_move = moves[dist(mt)].second;
     } else {
-        best_move = moves.back().second;
+        best_move = moves.front().second;
     }
 
     return best_move;

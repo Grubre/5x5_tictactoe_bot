@@ -192,20 +192,50 @@ auto cnt_almost_fours(const Board &board) -> std::pair<int, int>
     return count;
 }
 
+
+auto cnt_potential_twos(const Board &board) -> std::pair<int, int>
+{
+    std::pair<int, int> count{ 0, 0 };
+
+    for (const auto &pattern : win) {
+        std::array<Marker, 4> markers{};
+        for (int i = 0; i < 4; ++i) { markers[i] = board.get_cell(pattern[i][0], pattern[i][1]); }
+
+        if(markers[0] == Marker::X && markers[1] == Marker::X && markers[2] == Marker::NONE && markers[3] == Marker::NONE) {
+            ++count.first;
+        }
+
+        if(markers[0] == Marker::O && markers[1] == Marker::O && markers[2] == Marker::NONE && markers[3] == Marker::NONE) {
+            ++count.second;
+        }
+    }
+
+    return count;
+}
+
+
+
 auto evaluate_board(const Board &board, Marker current_player, int turn) -> int
 {
     auto [x_almost_fours, o_almost_fours] = cnt_almost_fours(board);
+    auto [x_potential_twos, o_potential_twos] = cnt_potential_twos(board);
     int enemy_almost_fours = 0;
     int my_almost_fours = 0;
+    int enemy_potential_twos = 0;
+    int my_potential_twos = 0;
 
     auto eval = 0;
 
     if (current_player == Marker::X) {
-        enemy_almost_fours += x_almost_fours;
-        my_almost_fours -= o_almost_fours;
-    } else {
         enemy_almost_fours += o_almost_fours;
-        my_almost_fours -= x_almost_fours;
+        my_almost_fours += x_almost_fours;
+        enemy_potential_twos += o_potential_twos;
+        my_potential_twos += x_potential_twos;
+    } else {
+        enemy_almost_fours += x_almost_fours;
+        my_almost_fours += o_almost_fours;
+        enemy_potential_twos += x_potential_twos;
+        my_potential_twos += o_potential_twos;
     }
 
     if (my_almost_fours == 0 && enemy_almost_fours > 0) { eval -= 100; }
@@ -234,5 +264,5 @@ auto evaluate_board(const Board &board, Marker current_player, int turn) -> int
     }
 
 
-    return eval + my_almost_fours * 4 - enemy_almost_fours * 3;
+    return eval + my_almost_fours * 40 - enemy_almost_fours * 30 + my_potential_twos * 15 - enemy_potential_twos * 12;
 }

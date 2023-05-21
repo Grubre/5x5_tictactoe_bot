@@ -13,6 +13,7 @@
  *X*
  XX_X
  X_XX
+ ponadto szukamy jeszcze patternow w stylu XX__ __XX, czyli potencjalnych czworek
 */
 
 struct Pattern
@@ -262,7 +263,6 @@ auto evaluate_board(const Board &board, Marker current_player, int turn) -> int
             eval -= p.value;
         }
     }
-
 
     return eval + my_almost_fours * 40 - enemy_almost_fours * 30 + my_potential_twos * 15 - enemy_potential_twos * 12;
 }
